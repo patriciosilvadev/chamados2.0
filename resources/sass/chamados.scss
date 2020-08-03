@@ -1,0 +1,30 @@
+// FontAwesome
+@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-free/scss/solid.scss";
+@import "~@fortawesome/fontawesome-free/scss/brands.scss";
+@import "~@fortawesome/fontawesome-free/scss/regular.scss";
+
+// Material-Bootstrap
+@import "~material-dashboard/assets/scss/material-dashboard.scss";
+
+// Bootstrap Functions
+@import "~bootstrap/scss/_functions.scss";
+@import "~bootstrap/scss/_variables.scss";
+@import "~bootstrap/scss/_mixins.scss";
+
+// Bootstrap Spinners
+@import "~bootstrap/scss/_spinners.scss";
+@import "~bootstrap/scss/utilities/_text.scss";
+@import "~bootstrap/scss/_tooltip.scss";
+
+// Custom CSS
+@import "variables";
+@import "custom";
+
+// Vue Date-Picker
+$default-color: #555;
+$primary-color: $masp;
+@import "~vue2-datepicker/src/index.scss";
+
+// Vue Multiselect
+@import "~vue-multiselect/dist/vue-multiselect.min.css";

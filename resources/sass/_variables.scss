@@ -1,0 +1,27 @@
+// Fonts
+@font-face {
+    font-family: "Futura Std";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/fonts/FuturaStd-Book.svg?v=4.7.0") format("svg"),
+        url("/fonts/FuturaStd-Book.woff2?v=4.7.0") format("woff2");
+}
+
+@font-face {
+    font-family: "Futura Std Bold";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/fonts/FuturaStd-Bold.svg?v=4.7.0") format("svg"),
+        url("/fonts/FuturaStd-Bold.woff2?v=4.7.0") format("woff2");
+}
+
+// MASP
+$masp: #bd2026;
+$masp_2: #c01829;
+$masp_3: #c02029;
+$masp_4: #c03029;
+$futura: "Futura Std";
+$futura_bold: "Futura Std Bold";
+
+// FontAwesome
+$fa-font-path: "../webfonts";
