@@ -10,6 +10,9 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
+        "@fortawesome/fontawesome-free": "^5.13.0",
+        "chart.js": "^2.9.3",
+        "material-dashboard": "^2.1.0",
         "axios": "^0.19",
         "bootstrap": "^4.0.0",
         "cross-env": "^7.0",
@@ -22,5 +25,14 @@
         "sass-loader": "^8.0.0",
         "vue": "^2.5.17",
         "vue-template-compiler": "^2.6.10"
+    },
+    "dependencies": {
+        "laravel-echo": "^1.7.0",
+        "moment": "^2.25.3",
+        "pusher-js": "^4.4.0",
+        "vue-material": "^1.0.0-beta-13",
+        "vue-multiselect": "^2.1.6",
+        "vue2-datepicker": "^2.13.4",
+        "vuetify": "^2.2.28"
     }
 }

@@ -106,7 +106,7 @@
                 v-if="diretoria || suporte || gestor"
             >
                 <div class="form-group">
-                    <label for="usuario">Solicitante</label>
+                    <label for="user">Solicitante</label>
                     <select
                         name="solicitante"
                         id="solicitante"
@@ -116,9 +116,9 @@
                     >
                         <option value="">Selecione</option>
                         <option
-                            :value="usuario.nome"
-                            v-for="(usuario, index) in usuarios"
-                            v-text="usuario.nome"
+                            :value="user.nome"
+                            v-for="(user, index) in users"
+                            v-text="user.nome"
                             :key="index"
                         ></option>
                     </select>
@@ -131,7 +131,7 @@
                 "
             >
                 <div class="form-group">
-                    <label for="usuario">Área de Suporte</label>
+                    <label for="user">Área de Suporte</label>
                     <select
                         name="solicitante"
                         id="solicitante"
@@ -217,7 +217,7 @@ import _ from "lodash";
 import DatePicker from "vue2-datepicker";
 import Paginator from "../Paginator";
 export default {
-    props: ["user", "usuarios", "departamentos"],
+    props: ["user", "users", "departamentos"],
     components: { Paginator, DatePicker },
     data() {
         return {

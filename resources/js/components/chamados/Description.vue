@@ -1,10 +1,7 @@
 <template>
     <div
         class="status mb-3"
-        v-if="
-            local_chamado.usuario_id == user.cod_usuario &&
-                local_chamado.status == 1
-        "
+        v-if="local_chamado.user_id == user.id && local_chamado.status == 1"
         v-show="show"
     >
         <div class="row mb-2">

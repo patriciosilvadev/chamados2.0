@@ -70,7 +70,7 @@ class Support extends Model
     {
         return Chamado::with(['usuario', 'local', 'servico', 'ambiente', 'setor', 'departamento'])
             ->whereIn('status', $filtro->status)
-            // ->where('usuario_id', $user->cod_usuario)
+            // ->where('usuario_id', $user->id)
             ->whereHas('usuario.departamentos', function ($query) use ($filtro) {
                 $query->whereIn('i_grupo.cod_grupo', auth()->user()->departamentos->pluck('cod_grupo')->all());
             })

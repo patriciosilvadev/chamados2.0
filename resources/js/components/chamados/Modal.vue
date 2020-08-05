@@ -178,7 +178,7 @@
                 </div>
                 <div
                     class="modal-footer"
-                    v-if="suporte || chamado.usuario_id == user.cod_usuario"
+                    v-if="suporte || chamado.user_id == user.id"
                 >
                     <div class="container-fluid">
                         <div class="row">

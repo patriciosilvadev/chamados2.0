@@ -82,7 +82,7 @@
                 <button
                     v-if="
                         local_chamado.status == 1 &&
-                            local_chamado.usuario_id == user.cod_usuario
+                            local_chamado.user_id == user.id
                     "
                     class="btn"
                     :class="{ 'btn-info': !show, 'btn-danger': show }"

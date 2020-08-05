@@ -12,7 +12,7 @@
             <div class="col-md-12">
                 <index-chamado-component
                     :user="{{ $user }}"
-                    :usuarios="{{ $usuarios }}"
+                    :users="{{ $users }}"
                     :departamentos="{{ $departamentos }}"
                 ></index-chamado-component>
                 <modal-chamado-component

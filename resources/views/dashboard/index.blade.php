@@ -10,7 +10,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <report-chamado-component :user="{{ $user }}" :usuarios="{{ $usuarios }}" :departamentos="{{ $departamentos }}"></report-chamado-component>
+                <report-chamado-component :user="{{ $user }}" :users="{{ $users }}" :departments="{{ $departments }}"></report-chamado-component>
                 <div class="container-fluid">
                     <div class="row status mt-3">
                         <div class="col-md-12">

@@ -33,8 +33,7 @@ class SupportController extends Controller
     public function index()
     {
         return view('support.index')->with([
-            'departments' => Department::areasSuporte(),
-            'user' => User::where('id', auth()->user()->id)->with(['support_area', 'subdepartment', 'roles'])->firstOrfail(),
+            'departments' => Department::supportAreas(),
             'users' => User::orderBy('name')->where('status', 1)->get(),
         ]);
     }
@@ -280,12 +279,7 @@ class SupportController extends Controller
 
         // Gestor
         if (in_array(2, auth()->user()->roles->pluck('id')->all()) &&
-            count(
-                array_intersect(
-                    auth()->user()->departments->pluck('id')->all(),
-                    Department::areasSuporte()->pluck('id')->all()
-                )
-            ) &&
+            count(                    auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all()  &&
             $filter->owner == 0
         ) {
             return Support::adminUser(auth()->user(), $filter);
@@ -304,12 +298,7 @@ class SupportController extends Controller
                 auth()->user()->roles->pluck('id')->all()
             )
         ) &&
-        count(
-            array_intersect(
-                auth()->user()->departments->pluck('id')->all(),
-                Department::areasSuporte()->pluck('id')->all() // array com os ids dos departments que tem suporte: TI e Engenharia.
-            )
-        )
+        count(                auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all() // array com os ids dos departments que tem suporte: TI e Engenharia.
         ? Support::adminUser(auth()->user(), $filter)
         : Support::regularUser(auth()->user(), $filter);
     }
@@ -336,11 +325,7 @@ class SupportController extends Controller
             $filter->data[0] = Carbon::now()->subMonths(12);
             $filter->data[1] = Carbon::now();
         }
-
-        $filter->paginate = $filter->paginate == '' ? 10 : $filter->paginate;
-        $filter->status = $filter->status == '' ? [1, 2] : json_decode($filter->status);
-        $filter->Department = $filter->Department == '' ? Department::areasSuporte()->pluck('id')->all() : json_decode($filter->Department);
-
+->paginate = $filter->paginate == '' ? 10 : $filter->paginate $filter->status = $filter->status == '' ? [1, 2] : json_decode($filter->status); Department = $filter->Department == '' ? Department::supportAreas()->pluck('id')->all() : json_decode($filter->Department);
         return $filter;
     }
 
@@ -372,13 +357,7 @@ class SupportController extends Controller
 
     public function printAvulsa()
     {
-        if (
-        (
-            array_intersect(auth()->user()->roles->pluck('id')->all(), [2, 8]) &&
-            array_intersect(auth()->user()->departments->pluck('id')->all(), Department::areasSuporte()->pluck('id')->all())
-        )
-
-        ) {
+        if (array_intersect(auth()->user()->roles->pluck('id')->all(), [2, 8]) && array_intersect(auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all())) {
             new SupportSeparateExport();
         } else {
             return abort(403);

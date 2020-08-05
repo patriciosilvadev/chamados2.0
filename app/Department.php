@@ -36,7 +36,7 @@ class Department extends Model
     /**
      *
      */
-    public static function supportAreas()
+    public function supportAreas()
     {
         return $this->whereHas('sectors')->get();
     }

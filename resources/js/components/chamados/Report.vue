@@ -57,7 +57,7 @@
                 "
             >
                 <div class="form-group">
-                    <label for="usuario">Área de Suporte</label>
+                    <label for="user">Área de Suporte</label>
                     <select
                         name="solicitante"
                         id="solicitante"
@@ -91,7 +91,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="usuario">Solicitante</label>
+                    <label for="user">Solicitante</label>
                     <select
                         name="solicitante"
                         id="solicitante"
@@ -100,9 +100,9 @@
                     >
                         <option value="">Selecione</option>
                         <option
-                            :value="usuario.nome"
-                            v-for="(usuario, index) in usuarios"
-                            v-text="usuario.nome"
+                            :value="user.nome"
+                            v-for="(user, index) in users"
+                            v-text="user.nome"
                             :key="index"
                         ></option>
                     </select>
@@ -126,7 +126,7 @@
 <script>
 import DatePicker from "vue2-datepicker";
 export default {
-    props: ["user", "usuarios", "departamentos"],
+    props: ["user", "users", "departamentos"],
     components: { DatePicker },
     data() {
         return {

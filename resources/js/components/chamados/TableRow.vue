@@ -94,9 +94,7 @@ export default {
             return boolean;
         },
         owner() {
-            return this.chamado.usuario_id === this.user.cod_usuario
-                ? true
-                : false;
+            return this.chamado.user_id === this.user.id ? true : false;
         },
     },
     methods: {

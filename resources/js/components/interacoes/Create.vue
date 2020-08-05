@@ -21,8 +21,8 @@
                                     class="tooltip-inner"
                                     :class="{
                                         'interacao-usuario':
-                                            interacao.usuario_id ==
-                                            chamadoLocal.usuario_id,
+                                            interacao.user_id ==
+                                            chamadoLocal.user_id,
                                     }"
                                     v-text="`${interacao.descricao}`"
                                 ></div>
@@ -38,10 +38,7 @@
         </div>
         <div
             class="row mt-2 d-flex justify-content-end"
-            v-if="
-                status &&
-                    (suporte || chamadoLocal.usuario_id == user.cod_usuario)
-            "
+            v-if="status && (suporte || chamadoLocal.user_id == user.id)"
         >
             <div class="col-md-12">
                 <textarea
@@ -63,10 +60,7 @@
         </div>
         <div
             class="row mt-2 d-flex justify-content-end"
-            v-if="
-                status &&
-                    (suporte || chamadoLocal.usuario_id == user.cod_usuario)
-            "
+            v-if="status && (suporte || chamadoLocal.user_id == user.id)"
         >
             <div class="col-md-12 d-flex justify-content-end">
                 <button
