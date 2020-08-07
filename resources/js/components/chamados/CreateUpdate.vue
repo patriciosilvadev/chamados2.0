@@ -1,5 +1,5 @@
 <template>
-    <form enctype="multipart/form-data" @submit.prevent="save">
+    <!-- <form enctype="multipart/form-data" @submit.prevent="save">
         <div class="row">
             <div class="col-md-12">
                 <h2>Serviços</h2>
@@ -139,19 +139,19 @@
         <div class="row mt-1">
             <div class="col-md-12">
                 <div class="form-group">
-                    <label for="descricao">Descrição do Problema</label>
+                    <label for="description">Descrição do Problema</label>
                     <textarea
-                        name="descricao"
-                        id="descricao"
+                        name="description"
+                        id="description"
                         cols="30"
                         rows="7"
                         class="form-control"
-                        v-model="form.descricao"
+                        v-model="form.description"
                     ></textarea>
                     <small
                         class="text-danger"
-                        v-if="errors.hasOwnProperty('descricao')"
-                        v-text="errors.descricao[0]"
+                        v-if="errors.hasOwnProperty('description')"
+                        v-text="errors.description[0]"
                     ></small>
                 </div>
             </div>
@@ -174,141 +174,143 @@
                 </button>
             </div>
         </div>
-    </form>
+    </form> -->
 </template>
 <script>
-import DatePicker from "vue2-datepicker";
+// import DatePicker from "vue2-datepicker";
 export default {
-    props: ["locais", "areas_suporte", "user"],
-    data() {
-        return {
-            form: {
-                descricao: "",
-                local: "",
-                ambiente: "",
-                setor: "",
-                servico: "",
-                departamento: this.areas_suporte[0].cod_grupo,
-                anexo: null,
-                data_desejada: null,
-                tipo_recorrencia: "",
-                data_prevista: null,
-            },
-            recorrencia: false,
-            loading: false,
-            errors: {},
-        };
-    },
-    computed: {
-        diretoria() {
-            let boolean = false;
-            this.user.funcoes.forEach((funcao) => {
-                if (funcao.cod_papel === 3) boolean = true;
-            });
-            return boolean;
-        },
-        gestorSuporte() {
-            let boolean = false;
-            this.user.funcoes.forEach((funcao) => {
-                this.user.departamentos.forEach((departamento) => {
-                    if (
-                        funcao.cod_papel === 2 &&
-                        (departamento.cod_grupo === 2 ||
-                            departamento.cod_grupo === 13)
-                    )
-                        boolean = true;
-                });
-            });
-            return boolean;
-        },
-        gestor() {
-            let boolean = false;
-            this.user.funcoes.forEach((funcao) => {
-                if (funcao.cod_papel === 2 && !this.gestorSuporte)
-                    boolean = true;
-            });
-            return boolean;
-        },
-        suporte() {
-            let boolean = false;
-            this.user.funcoes.forEach((funcao) => {
-                if (funcao.cod_papel === 8 || this.gestorSuporte)
-                    boolean = true;
-            });
-            return boolean;
-        },
-    },
-    methods: {
-        getFile(event) {
-            this.form.anexo = event.target.files[0];
-            document.querySelector("#anexo_nome").innerText =
-                event.target.files[0].name;
-        },
-        setFormVariables($event, place) {
-            if (place === "local") {
-                this.form.local = $event.localSelected;
-                this.form.ambiente = $event.ambienteSelected;
-            } else if (place === "setor") {
-                this.form.departamento = $event.departamentoSelected;
-                this.form.setor = $event.setorSelected;
-                this.form.servico = $event.servicoSelected;
-            }
-        },
-        save: _.throttle(
-            function() {
-                this.loading = !this.loading;
-                const formData = this.formatFormData();
-
-                axios
-                    .post("/chamados/create", formData)
-                    .then((result) => {
-                        this.loading = !this.loading;
-                        window.location = "/";
-                    })
-                    .catch((error) => {
-                        this.loading = !this.loading;
-                        this.errors = error.response.data.errors;
-                    });
-            },
-            1000,
-            { trailing: false }
-        ),
-        setAreaSuporte() {
-            window.events.$emit("recorrencia", {
-                recorrencia: this.recorrencia,
-                departamentos: this.user.departamentos,
-            });
-        },
-        formatFormData() {
-            const formData = new FormData();
-            this.form.anexo != null
-                ? formData.append("anexo", this.form.anexo)
-                : "";
-            formData.set("descricao", this.form.descricao);
-            formData.set("local", this.form.local);
-            formData.set("ambiente", this.form.ambiente);
-            formData.set("setor", this.form.setor);
-            formData.set("servico", this.form.servico);
-            formData.set("departamento", this.form.departamento);
-            formData.set(
-                "data_desejada",
-                this.form.data_desejada != null
-                    ? moment(this.form.data_desejada).format("YYYY-MM-DD")
-                    : ""
-            );
-            if (this.recorrencia) {
-                formData.set("recorrencia", true);
-                formData.set("tipo_recorrencia", this.form.tipo_recorrencia);
-                formData.set(
-                    "data_prevista",
-                    this.form.data_prevista != null
-                        ? moment(this.form.data_prevista).format("YYYY-MM-DD")
-                        : ""
-                );
-            }
-
-            return formData;
-        },
+    // props: ["locais", "areas_suporte", "user"],
+    // data() {
+    //     return {
+    //         form: {
+    //             description: "",
+    //             local: "",
+    //             ambiente: "",
+    //             setor: "",
+    //             servico: "",
+    //             departamento: this.areas_suporte[0].cod_grupo,
+    //             anexo: null,
+    //             data_desejada: null,
+    //             tipo_recorrencia: "",
+    //             data_prevista: null,
+    //         },
+    //         recorrencia: false,
+    //         loading: false,
+    //         errors: {},
+    //     };
+    // },
+    // computed: {
+    //     diretoria() {
+    //         let boolean = false;
+    //         this.user.funcoes.forEach((funcao) => {
+    //             if (funcao.cod_papel === 3) boolean = true;
+    //         });
+    //         return boolean;
+    //     },
+    //     gestorSuporte() {
+    //         let boolean = false;
+    //         this.user.funcoes.forEach((funcao) => {
+    //             this.user.departamentos.forEach((departamento) => {
+    //                 if (
+    //                     funcao.cod_papel === 2 &&
+    //                     (departamento.cod_grupo === 2 ||
+    //                         departamento.cod_grupo === 13)
+    //                 )
+    //                     boolean = true;
+    //             });
+    //         });
+    //         return boolean;
+    //     },
+    //     gestor() {
+    //         let boolean = false;
+    //         this.user.funcoes.forEach((funcao) => {
+    //             if (funcao.cod_papel === 2 && !this.gestorSuporte)
+    //                 boolean = true;
+    //         });
+    //         return boolean;
+    //     },
+    //     suporte() {
+    //         console.log(user);
+    //         let boolean = false;
+    //         this.user.funcoes.forEach((funcao) => {
+    //             if (funcao.cod_papel === 8 || this.gestorSuporte)
+    //                 boolean = true;
+    //         });
+    //         return boolean;
+    //     },
+    // },
+    // methods: {
+    //     getFile(event) {
+    //         this.form.anexo = event.target.files[0];
+    //         document.querySelector("#anexo_nome").innerText =
+    //             event.target.files[0].name;
+    //     },
+    //     setFormVariables($event, place) {
+    //         if (place === "local") {
+    //             this.form.local = $event.localSelected;
+    //             this.form.ambiente = $event.ambienteSelected;
+    //         } else if (place === "setor") {
+    //             this.form.departamento = $event.departamentoSelected;
+    //             this.form.setor = $event.setorSelected;
+    //             this.form.servico = $event.servicoSelected;
+    //         }
+    //     },
+    //     save: _.throttle(
+    //         function() {
+    //             this.loading = !this.loading;
+    //             const formData = this.formatFormData();
+    //             axios
+    //                 .post("/chamados/create", formData)
+    //                 .then((result) => {
+    //                     this.loading = !this.loading;
+    //                     window.location = "/";
+    //                 })
+    //                 .catch((error) => {
+    //                     this.loading = !this.loading;
+    //                     this.errors = error.response.data.errors;
+    //                 });
+    //         },
+    //         1000,
+    //         { trailing: false }
+    //     ),
+    //     setAreaSuporte() {
+    //         window.events.$emit("recorrencia", {
+    //             recorrencia: this.recorrencia,
+    //             departamentos: this.user.departamentos,
+    //         });
+    //     },
+    //     formatFormData() {
+    //         const formData = new FormData();
+    //         this.form.anexo != null
+    //             ? formData.append("anexo", this.form.anexo)
+    //             : "";
+    //         formData.set("description", this.form.description);
+    //         formData.set("local", this.form.local);
+    //         formData.set("ambiente", this.form.ambiente);
+    //         formData.set("setor", this.form.setor);
+    //         formData.set("servico", this.form.servico);
+    //         formData.set("departamento", this.form.departamento);
+    //         formData.set(
+    //             "data_desejada",
+    //             this.form.data_desejada != null
+    //                 ? moment(this.form.data_desejada).format("YYYY-MM-DD")
+    //                 : ""
+    //         );
+    //         if (this.recorrencia) {
+    //             formData.set("recorrencia", true);
+    //             formData.set("tipo_recorrencia", this.form.tipo_recorrencia);
+    //             formData.set(
+    //                 "data_prevista",
+    //                 this.form.data_prevista != null
+    //                     ? moment(this.form.data_prevista).format("YYYY-MM-DD")
+    //                     : ""
+    //             );
+    //         }
+    //         return formData;
+    //     },
+    // },
+    created() {
+        console.log(user);
     },
 };
 </script>

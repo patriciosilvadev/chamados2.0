@@ -1,0 +1,54 @@
+{
+    "name": "MASP Chamados",
+    "short_name": "Chamados",
+    "icons": [
+        {
+            "src": "/img/chamados_logo_48.png",
+            "type": "image/png",
+            "sizes": "48x48"
+        },
+        {
+            "src": "/img/chamados_logo_60.png",
+            "type": "image/png",
+            "sizes": "60x60"
+        },
+        {
+            "src": "/img/chamados_logo_92.png",
+            "type": "image/png",
+            "sizes": "92x92"
+        },
+        {
+            "src": "/img/chamados_logo_120.png",
+            "type": "image/png",
+            "sizes": "120x120"
+        },
+        {
+            "src": "/img/chamados_logo_192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/img/chamados_logo_240.png",
+            "type": "image/png",
+            "sizes": "240x240"
+        },
+        {
+            "src": "/img/chamados_logo_320.png",
+            "type": "image/png",
+            "sizes": "320x320"
+        },
+        {
+            "src": "/img/chamados_logo_512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#fff",
+    "theme_color": "#fff",
+    "orientation": "portrait",
+    "dir": "ltr",
+    "description": "Sistema de gestão de ordens de serviço."
+}

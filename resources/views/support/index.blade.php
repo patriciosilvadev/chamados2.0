@@ -13,7 +13,7 @@
                 <index-chamado-component
                     :user="{{ $user }}"
                     :users="{{ $users }}"
-                    :departamentos="{{ $departamentos }}"
+                    :departments="{{ $departments }}"
                 ></index-chamado-component>
                 <modal-chamado-component
                     :user='{{ $user }}'

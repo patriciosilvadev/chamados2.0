@@ -11,32 +11,25 @@
 |
 */
 
-Route::group(['middleware' => ['auth']], function () {
-    Route::get('/', 'DashboardController@index')->name('dashboard.index');
-    Route::get('/ajuda', 'DashboardController@ajuda')->name('ajuda.index');
+Route::get('/', 'DashboardController@index')->name('dashboard.index')->middleware(['auth']);
+Route::get('/ajuda', 'DashboardController@ajuda')->name('ajuda.index')->middleware(['auth']);
 
-    Route::get('/chamados', 'SupportController@index')->name('home');
-    Route::post('/chamados/create', 'SupportController@store');
-    Route::get('/chamados/create', 'SupportController@create')->name('chamado.create');
-    Route::patch('/chamados/{chamado}/edit', 'SupportController@update');
-    Route::get('/chamados/get/anexo/{nome}', 'SupportController@getAnexo');
-    Route::get('/chamados/{chamado}/interacoes', 'SupportController@show')->name('chamado.show');
-    Route::get('/chamados/{chamado}/print-os', 'SupportController@print')->name('chamado.print');
-    Route::get('/chamados/print-os/avulsa', 'SupportController@printAvulsa')->name('chamado.print.avulsa');
-    Route::get('/chamados/relatorio/export/{filter}', 'SupportController@export');
-    Route::get('/chamados/{filter}', 'SupportController@fetch');
+Route::resource('/supports', 'SupportController')->middleware(['auth']);
+Route::get('/supports/get/anexo/{nome}', 'SupportController@getAnexo')->middleware(['auth']);
+Route::get('/supports/{chamado}/interacoes', 'SupportController@show')->name('chamado.show')->middleware(['auth']);
+Route::get('/supports/{chamado}/print-os', 'SupportController@print')->name('chamado.print')->middleware(['auth']);
+Route::get('/supports/print-os/avulsa', 'SupportController@printAvulsa')->name('chamado.print.avulsa')->middleware(['auth']);
+Route::get('/supports/relatorio/export/{filter}', 'SupportController@export')->middleware(['auth']);
+Route::get('/supports/{filter}', 'SupportController@fetch')->middleware(['auth']);
 
-    Route::get('/charts/setores', 'ChartController@chartSetores');
-    Route::get('/charts/servicos', 'ChartController@chartServicos');
-    Route::get('/charts/status', 'ChartController@chartStatus');
+Route::get('/charts/setores', 'ChartController@chartSetores')->middleware(['auth']);
+Route::get('/charts/servicos', 'ChartController@chartServicos')->middleware(['auth']);
+Route::get('/charts/status', 'ChartController@chartStatus')->middleware(['auth']);
 
-    Route::post('/chamados/{chamado}/interacoes', 'InteracaoController@store')->name('interacao.store');
-});
+Route::post('/supports/{chamado}/interacoes', 'InteracaoController@store')->name('interacao.store')->middleware(['auth']);
 
 // Google Auth
-Route::group(['middleware' => ['web']], function () {
-    Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
-    Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
-    Route::get('/login/{provider}', 'Auth\SocialAccountController@redirectToProvider')->name('socialite.provider');
-    Route::get('/auth/{provider}/callback', 'Auth\SocialAccountController@handleProviderCallback');
-});
+Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
+Route::get('/login/{provider}', 'Auth\SocialAccountController@redirectToProvider')->name('socialite.provider');
+Route::get('/auth/{provider}/callback', 'Auth\SocialAccountController@handleProviderCallback');

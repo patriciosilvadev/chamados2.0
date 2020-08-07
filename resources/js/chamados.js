@@ -17,8 +17,8 @@ Vue.component(
     require("./components/SetorServicoComponent.vue").default
 );
 Vue.component(
-    "create-chamado-component",
-    require("./components/chamados/Create.vue").default
+    "create-update-chamado-component",
+    require("./components/chamados/CreateUpdate.vue").default
 );
 Vue.component(
     "details-chamado-component",
@@ -58,7 +58,7 @@ Vue.component(
 );
 Vue.component(
     "paginator-component",
-    require("./components/Paginator.vue").default
+    require("./components/Utilities/Paginator.vue").default
 );
 Vue.component(
     "create-interacao-component",
@@ -80,14 +80,4 @@ Vue.component(
 
 const app = new Vue({
     el: "#app",
-    data() {
-        return {
-            chamado: {},
-        };
-    },
-    methods: {
-        setChamado(event) {
-            this.chamado = event;
-        },
-    },
 });

@@ -82,7 +82,7 @@ export default {
     props: ["paginate"],
     methods: {
         page(url) {
-            this.$emit("page", url);
+            window.events.$emit("page", url);
         }
     }
 };

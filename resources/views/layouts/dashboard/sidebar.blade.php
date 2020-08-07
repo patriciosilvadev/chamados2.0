@@ -9,18 +9,18 @@
                     <p>Dashboard</p>
                 </a>
             </li>
-            <li class="nav-item {{ url()->current() == route('home') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('home') }}">
+            <li class="nav-item {{ url()->current() == route('supports.index') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('supports.index') }}">
                     <p>Chamados</p>
                 </a>
             </li>
-            <li class="nav-item {{ url()->current() == route('chamado.create') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('chamado.create') }}">
+            <li class="nav-item {{ url()->current() == route('supports.create') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('supports.create') }}">
                     <p>Abrir Chamado</p>
                 </a>
             </li>
-            <li class="nav-item {{ url()->current() == route('chamado.print.avulsa') ? 'active' : '' }}">
-                <a class="nav-link" target="_blank" href="{{ route('chamado.print.avulsa') }}">
+            {{-- <li class="nav-item {{ url()->current() == route('supports.print.avulsa') ? 'active' : '' }}">
+                <a class="nav-link" target="_blank" href="{{ route('supports.print.avulsa') }}">
                     <p>OS Avulsa</p>
                 </a>
             </li>
@@ -28,7 +28,7 @@
                 <a class="nav-link" href="{{ route('ajuda.index') }}">
                     <p>Ajuda</p>
                 </a>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </div>

@@ -10,12 +10,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <create-chamado-component
-                    :locais="{{ $locais }}"
-                    :areas_suporte="{{ $areasSuporte }}"
-                    :departamentos="{{ auth()->user()->departamentos }}"
-                    :user="{{ $user }}"
-                ></create-chamado-component>
+                <create-update-chamado-component></create-update-chamado-component>
             </div>
         </div>
     </div>

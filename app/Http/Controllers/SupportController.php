@@ -32,8 +32,14 @@ class SupportController extends Controller
 
     public function index()
     {
+        if (request()->wantsJson()) {
+            $supports = new Support;
+            return $supports->search(request()->all());
+        }
+        $departments = new Department;
         return view('support.index')->with([
-            'departments' => Department::supportAreas(),
+            'departments' => $departments->supportAreas(),
+            'user' => auth()->user(),
             'users' => User::orderBy('name')->where('status', 1)->get(),
         ]);
     }
@@ -45,14 +51,7 @@ class SupportController extends Controller
      */
     public function create()
     {
-        return view('support.create')->with([
-            'environments' => Environment::all(),
-            'user' => User::where('id', auth()->user()->id)->with(['support_area', 'subdepartment', 'roles'])->firstOrfail(),
-            'supportAreas' => json_encode([
-                'departments' => Department::supportAreas(),
-                'subdepartments' => Subdepartment::supportAreas()
-            ]),
-        ]);
+        return view('support.create');
     }
 
     /**
@@ -263,45 +262,32 @@ class SupportController extends Controller
         }
     }
 
-    public function fetch($filter)
-    {
-        $filter = $this->formatarFiltro($filter);
+    // public function fetch($filter)
+    // {
+    //     $filter = $this->formatarFiltro($filter);
 
-        // Meus supports
-        if ($filter->owner == 1) {
-            return Support::regularUser(auth()->user(), $filter);
-        }
+    //     // Meus supports
+    //     if ($filter->owner == 1) {
+    //         return Support::regularUser(auth()->user(), $filter);
+    //     }
 
-        // Diretoria
-        if (in_array(3, auth()->user()->roles->pluck('id')->all())) {
-            return Support::diretorUser(auth()->user(), $filter);
-        }
+    //     // Diretoria
+    //     if (in_array(3, auth()->user()->roles->pluck('id')->all())) {
+    //         return Support::diretorUser(auth()->user(), $filter);
+    //     }
 
-        // Gestor
-        if (in_array(2, auth()->user()->roles->pluck('id')->all()) &&
-            count(                    auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all()  &&
-            $filter->owner == 0
-        ) {
-            return Support::adminUser(auth()->user(), $filter);
-        } elseif (in_array(2, auth()->user()->roles->pluck('id')->all())) {
-            return Support::gestorUser(auth()->user(), $filter);
-        }
+    //     // Gestor
+    //     if (in_array(2, auth()->user()->roles->pluck('id')->all()) && count(auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all())  && $filter->owner == 0) {
+    //         return Support::adminUser(auth()->user(), $filter);
+    //     } elseif (in_array(2, auth()->user()->roles->pluck('id')->all())) {
+    //         return Support::gestorUser(auth()->user(), $filter);
+    //     }
 
 
-        return count(
-            array_intersect(
-                Role::where('id', 2)
-                    ->orWhere('id', 8)
-                    ->get()
-                    ->pluck('id')
-                    ->all(),
-                auth()->user()->roles->pluck('id')->all()
-            )
-        ) &&
-        count(                auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all() // array com os ids dos departments que tem suporte: TI e Engenharia.
-        ? Support::adminUser(auth()->user(), $filter)
-        : Support::regularUser(auth()->user(), $filter);
-    }
+    //     return count(array_intersect(Role::where('id', 2)->orWhere('id', 8)->get()->pluck('id')->all(), auth()->user()->roles->pluck('id')->all())) && count(auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all())
+    //     ? Support::adminUser(auth()->user(), $filter)
+    //     : Support::regularUser(auth()->user(), $filter);
+    // }
 
     protected function recordActivity($support, $description)
     {
@@ -325,7 +311,7 @@ class SupportController extends Controller
             $filter->data[0] = Carbon::now()->subMonths(12);
             $filter->data[1] = Carbon::now();
         }
-->paginate = $filter->paginate == '' ? 10 : $filter->paginate $filter->status = $filter->status == '' ? [1, 2] : json_decode($filter->status); Department = $filter->Department == '' ? Department::supportAreas()->pluck('id')->all() : json_decode($filter->Department);
+        // ->paginate = $filter->paginate == '' ? 10 : $filter->paginate $filter->status = $filter->status == '' ? [1, 2] : json_decode($filter->status); Department = $filter->Department == '' ? Department::supportAreas()->pluck('id')->all() : json_decode($filter->Department);
         return $filter;
     }
 

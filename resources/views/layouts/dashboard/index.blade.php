@@ -10,6 +10,14 @@
     <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Material+Icons" />
     <link href="{{ asset('css/chamados.css') }}" rel="stylesheet" />
+    <script>
+        var user = {
+            name: '{{ auth()->user()->name }}',
+            id: {{ auth()->user()->id }},
+            department_id: {{ auth()->user()->department->id }},
+            subdepartment_id: {{ auth()->user()->subdepartment->id }},
+        }
+    </script>
 </head>
 <body>
     <div class="wrapper" id="app">
@@ -24,7 +32,7 @@
                 @include('layouts.dashboard.footer')
             </div>
         </div>
-        {{-- <flash message="{{ session('flash') }}"></flash> --}}
+        <flash message="{{ session('flash') }}"></flash>
     </div>
     <script src="{{ asset('js/chamados.js') }}"></script>
 </body>
