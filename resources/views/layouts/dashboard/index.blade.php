@@ -16,6 +16,7 @@
             id: {{ auth()->user()->id }},
             department_id: {{ auth()->user()->department->id }},
             subdepartment_id: {{ auth()->user()->subdepartment->id }},
+            role: '{{ auth()->user()->role() }}'
         }
     </script>
 </head>

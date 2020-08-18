@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <div class="row">
             <div
                 :class="{
@@ -77,8 +77,7 @@
                     </select>
                 </div>
             </div>
-        </div>
-        <div class="row d-flex align-items-end">
+
             <div
                 :class="{
                     'col-md-4': diretoria || gestor || gestorSuporte,
@@ -149,8 +148,7 @@
                     </select>
                 </div>
             </div>
-        </div>
-        <div class="row">
+
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="">Busca</label>
@@ -163,65 +161,12 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div v-if="!loading">
-                    <table class="table table-hover table-responsive-xl mt-2">
-                        <thead>
-                            <tr>
-                                <th scope="col">Código</th>
-                                <th scope="col">Solicitante</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Departamento</th>
-                                <th scope="col">Local</th>
-                                <th scope="col">Serviço</th>
-                                <th scope="col">Data</th>
-                                <th scope="col">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <table-row-component
-                                v-for="chamado in chamados"
-                                :chamado="chamado"
-                                :user="user"
-                                :key="chamado.id"
-                                @sendchamado="sendChamado($event)"
-                            ></table-row-component>
-                        </tbody>
-                    </table>
-                    <paginator
-                        :paginate="paginate"
-                        @page="fetch($event)"
-                        v-show="paginate.last_page > 1"
-                    ></paginator>
-                </div>
-                <div
-                    v-else="loading"
-                    class="d-flex justify-content-center mt-3"
-                >
-                    <img src="/img/loading.gif" alt="loading_img" /><span
-                        >Carregando...</span
-                    >
-                </div>
-            </div>
-        </div>
-        <div class="row" v-if="!chamados.length && !loading">
-            <div class="col-md-12 d-flex justify-content-center mt-3">
-                <span>Nenhum chamado encontrado.</span>
-            </div>
-        </div>
     </div>
 </template>
 <script>
-import _ from "lodash";
-import DatePicker from "vue2-datepicker";
-import Paginator from "../Paginator";
 export default {
-    props: ["user", "users", "departamentos"],
-    components: { Paginator, DatePicker },
     data() {
         return {
-            chamados: [],
             filter: {
                 status: "",
                 owner: "",
@@ -229,82 +174,9 @@ export default {
                 search: "",
                 data: [null, null],
                 solicitante: "",
-                departamento: "",
+                department: "",
             },
-            paginate: {},
-            loading: false,
-            timeout: null,
         };
-    },
-    computed: {
-        diretoria() {
-            let boolean = false;
-            this.user.funcoes.forEach((funcao) => {
-                if (funcao.cod_papel === 3) boolean = true;
-            });
-            return boolean;
-        },
-        gestorSuporte() {
-            let boolean = false;
-            this.user.funcoes.forEach((funcao) => {
-                this.user.departamentos.forEach((departamento) => {
-                    if (
-                        funcao.cod_papel === 2 &&
-                        (departamento.cod_grupo === 2 ||
-                            departamento.cod_grupo === 13)
-                    )
-                        boolean = true;
-                });
-            });
-            return boolean;
-        },
-        gestor() {
-            let boolean = false;
-            this.user.funcoes.forEach((funcao) => {
-                if (funcao.cod_papel === 2 && !this.gestorSuporte)
-                    boolean = true;
-            });
-            return boolean;
-        },
-        suporte() {
-            let boolean = false;
-            this.user.funcoes.forEach((funcao) => {
-                if (funcao.cod_papel === 8 || this.gestorSuporte)
-                    boolean = true;
-            });
-            return boolean;
-        },
-    },
-    methods: {
-        fetch: _.debounce(function(url = null) {
-            this.loading = !this.loading;
-            axios
-                .get(
-                    url !== null
-                        ? url
-                        : `/chamados/${JSON.stringify(this.filter)}`
-                )
-                .then(({ data }) => {
-                    this.chamados = [];
-                    this.chamados = data.data;
-                    delete data.data;
-                    this.paginate = data;
-                    this.loading = !this.loading;
-                })
-                .catch((error) => console.error(error));
-        }, 300),
-        sendChamado(chamado) {
-            this.$emit("sendchamado", chamado);
-        },
-    },
-    created() {
-        this.fetch();
     },
 };
 </script>
-<style>
-img {
-    height: 1.5rem;
-    margin-right: 0.25rem;
-}
-</style>

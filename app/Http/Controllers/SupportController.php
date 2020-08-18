@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Activity;
-use App\Support;
-use App\Department;
-use App\Subdepartment;
-use App\Exports\SupportSeparateExport;
-use App\Exports\SupportOSExport;
-use App\Exports\SupportsExport;
 use App\Role;
-use App\Jobs\GoogleCalendar;
-use App\Jobs\GoogleDriveUpload;
-use App\Justification;
-use App\Environment;
-use App\Mail\SupportUpdated;
-use App\Mail\SupportCreated;
-use App\Sector;
 use App\User;
+use App\Sector;
+use App\Support;
+use App\Activity;
 use Carbon\Carbon;
+use App\Department;
+use App\Environment;
+use App\Justification;
+use App\Subdepartment;
+use App\Jobs\GoogleCalendar;
+use App\Mail\SupportCreated;
+use App\Mail\SupportUpdated;
 use Illuminate\Http\Request;
+use App\Exports\SupportsExport;
+use App\Jobs\GoogleDriveUpload;
+use App\Exports\SupportOSExport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\SupportRequest;
+use App\Exports\SupportSeparateExport;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 
 class SupportController extends Controller
 {
@@ -51,7 +52,8 @@ class SupportController extends Controller
      */
     public function create()
     {
-        return view('support.create');
+        $departments = new Department;
+        return view('support.create')->with(['departments' => $departments->supportAreas()]);
     }
 
     /**
@@ -60,44 +62,53 @@ class SupportController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SupportRequest $request)
     {
-        request()->validate([
-            'environment' => request('support_area') == 13 ? 'required|exists:locais,id' : 'nullable',
-            'spot' => request('support_area') == 13 ? 'required|exists:spots,id' : 'nullable',
-            'sector' => 'required|exists:sector,id',
-            'service' => 'required|exists:services,id',
-            'description' => 'required',
-            'attach_file_name' => 'nullable|file',
-            'support_area' => 'required',
-            'desired_date' => 'nullable',
-            'expected_date' => request('recorrencia') ? 'required' : 'nullable',
-            'tipo_recorrencia' => request('recorrencia') ? 'required' : 'nullable',
-        ]);
+        if (request('subdepartment')) {
+            $subdepartment = Subdepartment::whereId(request('subdepartment'))->first();
+            $subdepartment->supports()->create([
+                'department' => request('department'),
+                'user_id' => auth()->user()->id,
+                'environment_id' => request('subdepartment') == 13 ? request('environment') : null,
+                'spot_id' => request('subdepartment') == 13 ? request('spot') : null,
+                'sector_id' => request('sector'),
+                'service_id' => request('service'),
+                'description' => request('description'),
+                'expected_date' => request('expected_date') !== null ? new Carbon(request('expected_date')) : null,
+                'desired_date' => request('desired_date') !== null && !request('recurrent') ? new Carbon(request('desired_date')) : null,
+                'status' => 1,
+                'attached_file_name' => request()->file('attached_file_name') !== null ? $this->attach_file_name() : null,
+                'recurrent' => request('recurrent')
+            ]);
+            $support = $subdepartment->supports->last();
+        } else {
+            $department = Department::whereId(request('department'))->first();
+            $department->supports()->create([
+                'user_id' => auth()->user()->id,
+                'environment_id' => request('subdepartment') == 13 ? request('environment') : null,
+                'spot_id' => request('subdepartment') == 13 ? request('spot') : null,
+                'sector_id' => request('sector'),
+                'service_id' => request('service'),
+                'description' => request('description'),
+                'expected_date' => request('expected_date') !== null ? new Carbon(request('expected_date')) : null,
+                'desired_date' => request('desired_date') !== null && !request('recurrent') ? new Carbon(request('desired_date')) : null,
+                'status' => 1,
+                'attached_file_name' => request()->file('attached_file_name') !== null ? $this->attach_file_name() : null,
+                'recurrent' => request('recurrent')
+            ]);
+            $support = $department->supports->last();
+        }
 
-        $expected_date = request('expected_date') !== null && request('recorrencia') ? Carbon::createFromFormat('Y-m-d', request('expected_date')) : null;
-        $support = Support::create([
-            'support_area' => request('support_area'),
-            'usuario_id' => auth()->user()->id,
-            'environment_id' => request('support_area') == 13 ? request('environment') : null,
-            'spot_id' => request('support_area') == 13 ? request('spot') : null,
-            'sector' => request('sector'),
-            'service_id' => request('service'),
-            'description' => request('description'),
-            'expected_date' => $expected_date,
-            'desired_date' => request('desired_date') !== null && !request('recorrencia') ? Carbon::createFromFormat('Y-m-d', request('desired_date')) : null,
-            'status' => 1,
-            'attach_file_name' => request()->file('attach_file_name') !== null ? $this->attach_file_name() : null,
-            'recurrent' => request('tipo_recorrencia')
+        $support->activities()->create([
+            'description' => [
+                'status' => $support->status,
+                'description' => $support->description,
+                'execution_by' => $support->execution_by,
+                'expected_hours' => $support->expected_hours,
+                'done_by' => $support->done_by,
+                'created_by' => $support->user->name,
+            ],
         ]);
-
-        $this->recordActivity($support, "[
-            'status' => {$support->status},
-            'description' => {$support->description},
-            'execution_by' => {$support->execution_by},
-            'expected_hours' => {$support->expected_hours},
-            'done_by' => " . json_encode($support->done_by) .
-        "]");
 
         try {
             Mail::to($support->area->email)->send(new SupportCreated($support));
@@ -114,7 +125,7 @@ class SupportController extends Controller
             ->first();
 
         if (
-            auth()->user()->id == $support->usuario_id ||
+            auth()->user()->id == $support->user_id ||
             (
                 array_intersect(auth()->user()->roles->pluck('id')->all(), [2, 8]) &&
                 array_intersect(auth()->user()->departments->pluck('id')->all(), (array) $support->area)
@@ -186,7 +197,7 @@ class SupportController extends Controller
 
                 return Justification::create([
                     'support_id' => $support->id,
-                    'usuario_id' => auth()->user()->id,
+                    'user_id' => auth()->user()->id,
                     'description' => request('justification')
                 ]);
             } elseif (request('status') == 2) {
@@ -291,11 +302,6 @@ class SupportController extends Controller
 
     protected function recordActivity($support, $description)
     {
-        Activity::create([
-            'support_id' => $support->id,
-            'usuario_id' => auth()->user()->id,
-            'description' => $description,
-        ]);
     }
 
     protected function formatarFiltro($filter)

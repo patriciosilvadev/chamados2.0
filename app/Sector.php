@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Department;
+use App\Subdepartment;
 use Illuminate\Database\Eloquent\Model;
 
 class Sector extends Model
@@ -24,5 +26,18 @@ class Sector extends Model
     public function support_area()
     {
         return $this->morphTo();
+    }
+
+    /**
+     *
+     */
+    public function search(array $filter)
+    {
+        if ($filter['subdepartment'] != null) {
+            $subdepartment = Subdepartment::whereId($filter['subdepartment'])->first();
+            return $subdepartment->sectors;
+        }
+        $department = Department::whereId($filter['department'])->first();
+        return $department->sectors;
     }
 }

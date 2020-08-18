@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Support extends Model
 {
+    protected $table = 'chamados.supports';
     protected $fillable = [
         'user_id','support_area_id','support_area_type',
         'environment_id','spot_id','sector_id','service_id',
@@ -23,9 +24,6 @@ class Support extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     *
-     */
     public function area()
     {
         return $this->morphTo();
@@ -58,7 +56,7 @@ class Support extends Model
 
     public function activities()
     {
-        return $this->hasMany(Activity::class);
+        return $this->morphMany(Activity::class, 'activity');
     }
 
     public function justification()

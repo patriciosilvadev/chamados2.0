@@ -10,7 +10,11 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <create-update-chamado-component></create-update-chamado-component>
+                <create-update-support-component
+                    :departments="{{ $departments }}"
+                    http_verb="post"
+                >
+                </create-update-support-component>
             </div>
         </div>
     </div>

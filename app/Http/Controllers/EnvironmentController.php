@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Service;
+use App\Environment;
 use Illuminate\Http\Request;
 
-class ServiceController extends Controller
+class EnvironmentController extends Controller
 {
+    /**
+     *
+     */
     public function index()
     {
         if (request()->wantsJson()) {
-            return Service::where('sector_id', request('sector'))->get();
+            return Environment::get();
         }
     }
 }

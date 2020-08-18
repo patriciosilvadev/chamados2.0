@@ -22,6 +22,13 @@ Route::get('/supports/print-os/avulsa', 'SupportController@printAvulsa')->name('
 Route::get('/supports/relatorio/export/{filter}', 'SupportController@export')->middleware(['auth']);
 Route::get('/supports/{filter}', 'SupportController@fetch')->middleware(['auth']);
 
+Route::resource('subdepartments', 'SubdepartmentController')->middleware(['auth']);
+
+Route::get('sectors', 'SectorController@index')->middleware(['auth']);
+Route::get('services', 'ServiceController@index')->middleware(['auth']);
+Route::get('environments', 'EnvironmentController@index')->middleware(['auth']);
+Route::get('spots', 'SpotController@index')->middleware(['auth']);
+
 Route::get('/charts/setores', 'ChartController@chartSetores')->middleware(['auth']);
 Route::get('/charts/servicos', 'ChartController@chartServicos')->middleware(['auth']);
 Route::get('/charts/status', 'ChartController@chartStatus')->middleware(['auth']);

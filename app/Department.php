@@ -20,6 +20,14 @@ class Department extends Model
     /**
      *
      */
+    public function subdepartments()
+    {
+        return $this->hasMany(Subdepartment::class);
+    }
+
+    /**
+     *
+     */
     public function sectors()
     {
         return $this->morphMany(Sector::class, 'support_area');
@@ -38,6 +46,10 @@ class Department extends Model
      */
     public function supportAreas()
     {
-        return $this->whereHas('sectors')->get();
+        return $this->whereHas('sectors')
+            ->orWhereHas('subdepartments', function ($query) {
+                $query->whereHas('sectors');
+            })
+            ->get();
     }
 }

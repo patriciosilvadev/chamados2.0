@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 
 class SpotController extends Controller
 {
-    public function fetch($environment)
+    public function index()
     {
-        return Spot::where('environment_id', $environment)->get();
+        if (request()->wantsJson()) {
+            return Spot::where('environment_id', request('environment'))->get();
+        }
     }
 }

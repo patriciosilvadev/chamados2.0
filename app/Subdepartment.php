@@ -45,8 +45,10 @@ class Subdepartment extends Model
     /**
      *
      */
-    public function supportAreas()
+    public function supportAreas(array $filter)
     {
-        return $this->whereHas('sectors')->get();
+        return $this->whereHas('sectors')
+            ->where('department_id', $filter['department'])
+            ->get();
     }
 }
