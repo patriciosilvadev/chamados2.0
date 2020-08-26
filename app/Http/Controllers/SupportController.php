@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Role;
 use App\User;
 use App\Sector;
 use App\Support;
@@ -37,11 +36,11 @@ class SupportController extends Controller
             $supports = new Support;
             return $supports->search(request()->all());
         }
+
         $departments = new Department;
         return view('support.index')->with([
             'departments' => $departments->supportAreas(),
-            'user' => auth()->user(),
-            'users' => User::orderBy('name')->where('status', 1)->get(),
+            'users' => User::orderBy('name')->where('status', 1)->whereNotNull('email')->get(),
         ]);
     }
 
@@ -117,29 +116,12 @@ class SupportController extends Controller
         }
     }
 
-    public function show($support)
+    public function show(Support $support)
     {
-        $user = User::where('id', auth()->user()->id)->with(['department', 'subdepartment', 'roles'])->firstOrfail();
-        $support = Support::whereId($support)
-            ->with([ 'user', 'environment', 'service', 'spot', 'sector', 'area', 'messages.user', 'justification' ])
-            ->first();
-
-        if (
-            auth()->user()->id == $support->user_id ||
-            (
-                array_intersect(auth()->user()->roles->pluck('id')->all(), [2, 8]) &&
-                array_intersect(auth()->user()->departments->pluck('id')->all(), (array) $support->area)
-            )
-        ) {
-            return view('support.show')->with([
-                'support' => $support,
-                'user' => $user,
-                'sector' => Sector::where('support_area', $support->area)->get(),
-                'atendentes' => json_encode(User::atendentes())
-            ]);
-        } else {
-            return abort(403);
-        }
+        return view('support.show')->with([
+            'support' => $support,
+            'sector' => Sector::where('support_area', $support->area)->get(),
+        ]);
     }
 
     protected function attach_file_name()
@@ -271,54 +253,6 @@ class SupportController extends Controller
             $file = public_path("{$this->directory}") . $attach_file_name; // Linux Server
             return Response::download($file);
         }
-    }
-
-    // public function fetch($filter)
-    // {
-    //     $filter = $this->formatarFiltro($filter);
-
-    //     // Meus supports
-    //     if ($filter->owner == 1) {
-    //         return Support::regularUser(auth()->user(), $filter);
-    //     }
-
-    //     // Diretoria
-    //     if (in_array(3, auth()->user()->roles->pluck('id')->all())) {
-    //         return Support::diretorUser(auth()->user(), $filter);
-    //     }
-
-    //     // Gestor
-    //     if (in_array(2, auth()->user()->roles->pluck('id')->all()) && count(auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all())  && $filter->owner == 0) {
-    //         return Support::adminUser(auth()->user(), $filter);
-    //     } elseif (in_array(2, auth()->user()->roles->pluck('id')->all())) {
-    //         return Support::gestorUser(auth()->user(), $filter);
-    //     }
-
-
-    //     return count(array_intersect(Role::where('id', 2)->orWhere('id', 8)->get()->pluck('id')->all(), auth()->user()->roles->pluck('id')->all())) && count(auth()->user()->departments->pluck('id')->all(), Department::supportAreas()->pluck('id')->all())
-    //     ? Support::adminUser(auth()->user(), $filter)
-    //     : Support::regularUser(auth()->user(), $filter);
-    // }
-
-    protected function recordActivity($support, $description)
-    {
-    }
-
-    protected function formatarFiltro($filter)
-    {
-        $filter = json_decode($filter);
-
-        if ($filter->data[0] != null && $filter->data[1] != null) {
-            $filter->data[0] = explode('T', $filter->data[0]);
-            $filter->data[1] = explode('T', $filter->data[1]);
-            $filter->data[0] = Carbon::createFromFormat('Y-m-d', $filter->data[0][0]);
-            $filter->data[1] = Carbon::createFromFormat('Y-m-d', $filter->data[1][0]);
-        } else {
-            $filter->data[0] = Carbon::now()->subMonths(12);
-            $filter->data[1] = Carbon::now();
-        }
-        // ->paginate = $filter->paginate == '' ? 10 : $filter->paginate $filter->status = $filter->status == '' ? [1, 2] : json_decode($filter->status); Department = $filter->Department == '' ? Department::supportAreas()->pluck('id')->all() : json_decode($filter->Department);
-        return $filter;
     }
 
     public function export($filter)

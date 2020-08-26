@@ -1,42 +1,43 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <div
-                :class="{
-                    'col-md-4': suporte || diretoria || gestor,
-                    'col-md-6': !suporte && !diretoria && !gestor,
-                }"
-            >
+    <div class="container-fluid">
+        <div class="row d-flex align-items-end">
+            <div :class="authUser.role != 'regular' ? 'col-md-4' : 'col-md-6'">
+                <div class="form-group">
+                    <label for="">Busca</label>
+                    <input
+                        class="form-control"
+                        type="text"
+                        @keyup="search"
+                        v-model="filters.search"
+                    />
+                </div>
+            </div>
+            <div :class="authUser.role != 'regular' ? 'col-md-4' : 'col-md-6'">
                 <div class="form-group">
                     <label for="departamento">Itens por página</label>
                     <select
                         name="pagination"
                         id="pagination"
                         class="form-control"
-                        v-model="filter.paginate"
-                        @change="fetch()"
+                        v-model="filters.paginate"
+                        @change="search"
                     >
-                        <option value="">Selecione</option>
                         <option value="10">10</option>
                         <option value="20">20</option>
                         <option value="50">50</option>
+                        <option value="all">Todos</option>
                     </select>
                 </div>
             </div>
-            <div
-                :class="{
-                    'col-md-4': suporte || diretoria || gestor,
-                    'col-md-6': !suporte && !diretoria && !gestor,
-                }"
-            >
+            <div :class="authUser.role != 'regular' ? 'col-md-4' : 'col-md-6'">
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select
                         name="status"
                         id="status"
                         class="form-control"
-                        v-model="filter.status"
-                        @change="fetch()"
+                        v-model="filters.status"
+                        @change="search"
                     >
                         <option value="">Selecione</option>
                         <option value="[1]">Aberto</option>
@@ -51,11 +52,8 @@
                 </div>
             </div>
             <div
-                :class="{
-                    'col-md-4': suporte || diretoria || gestor,
-                    'col-md-6': !suporte && !diretoria && !gestor,
-                }"
-                v-if="suporte || diretoria || gestor"
+                :class="authUser.role != 'regular' ? 'col-md-4' : 'col-md-6'"
+                v-if="authUser.role != 'regular'"
             >
                 <div class="form-group">
                     <label for="owner">Tipo de Chamado</label>
@@ -63,61 +61,42 @@
                         name="owner"
                         id="owner"
                         class="form-control"
-                        v-model="filter.owner"
-                        @change="fetch()"
+                        v-model="filters.owner"
+                        @change="search"
                     >
-                        <option value="">Selecione</option>
                         <option value="1">Meus Chamados</option>
                         <option
                             value="2"
-                            v-if="diretoria || gestorSuporte || gestor"
+                            v-if="
+                                authUser.role == 'manager' ||
+                                    authUser.role == 'ceo'
+                            "
                             >Chamados dos meus Colaboradores</option
                         >
-                        <option value="0" v-if="suporte">Suporte</option>
+                        <option value="0" v-if="authUser.role == 'support'"
+                            >Suporte</option
+                        >
                     </select>
                 </div>
             </div>
-
             <div
-                :class="{
-                    'col-md-4': diretoria || gestor || gestorSuporte,
-                    'col-md-6': !diretoria && !gestor && !gestorSuporte,
-                }"
-            >
-                <div class="form-group">
-                    <label for="data_inicio">Data</label><br />
-                    <date-picker
-                        v-model="filter.data"
-                        :range="true"
-                        lang="pt-br"
-                        format="DD/MM/YYYY"
-                        input-class="form-control"
-                        width="100%"
-                        @change="fetch()"
-                    ></date-picker>
-                </div>
-            </div>
-            <div
-                :class="{
-                    'col-md-4': diretoria || gestor || gestorSuporte,
-                    'col-md-6': !diretoria && !gestor && !gestorSuporte,
-                }"
-                v-if="diretoria || suporte || gestor"
+                :class="authUser.role != 'regular' ? 'col-md-4' : 'col-md-6'"
+                v-if="authUser.role != 'regular'"
             >
                 <div class="form-group">
                     <label for="user">Solicitante</label>
                     <select
-                        name="solicitante"
-                        id="solicitante"
+                        name="user"
+                        id="user"
                         class="form-control"
-                        v-model="filter.solicitante"
-                        @change="fetch()"
+                        v-model="filters.user"
+                        @change="search"
                     >
                         <option value="">Selecione</option>
                         <option
-                            :value="user.nome"
+                            :value="user.name"
                             v-for="(user, index) in users"
-                            v-text="user.nome"
+                            v-text="user.name"
                             :key="index"
                         ></option>
                     </select>
@@ -125,39 +104,39 @@
             </div>
             <div
                 class="col-md-4"
-                v-if="
-                    (diretoria || gestor || gestorSuporte) && filter.owner == 2
-                "
+                v-if="authUser.role != 'regular' && filters.owner == 2"
             >
                 <div class="form-group">
-                    <label for="user">Área de Suporte</label>
+                    <label for="area">Área de Suporte</label>
                     <select
-                        name="solicitante"
-                        id="solicitante"
+                        name="area"
+                        id="area"
                         class="form-control"
-                        v-model="filter.departamento"
-                        @change="fetch()"
+                        v-model="filters.area"
+                        @change="search"
                     >
                         <option value="">Selecione</option>
                         <option
-                            :value="`[${departamento.cod_grupo}]`"
-                            v-for="(departamento, index) in departamentos"
-                            v-text="departamento.nome"
+                            :value="`[${department.cod_grupo}]`"
+                            v-for="(department, index) in departments"
+                            v-text="department.name"
                             :key="index"
                         ></option>
                     </select>
                 </div>
             </div>
-
-            <div class="col-md-12">
+            <div :class="authUser.role != 'regular' ? 'col-md-4' : 'col-md-6'">
                 <div class="form-group">
-                    <label for="">Busca</label>
-                    <input
-                        class="form-control"
-                        type="text"
-                        @keyup="fetch()"
-                        v-model="filter.search"
-                    />
+                    <label for="data_inicio">Data</label><br />
+                    <date-picker
+                        v-model="filters.date"
+                        :range="true"
+                        lang="pt-br"
+                        format="DD/MM/YYYY"
+                        input-class="form-control"
+                        width="100%"
+                        @change="search"
+                    ></date-picker>
                 </div>
             </div>
         </div>
@@ -167,16 +146,40 @@
 export default {
     data() {
         return {
-            filter: {
+            authUser: {},
+            filters: {
                 status: "",
-                owner: "",
-                paginate: "",
+                owner: 1,
+                paginate: 10,
                 search: "",
-                data: [null, null],
-                solicitante: "",
-                department: "",
+                date: [null, null],
+                user: "",
+                area: "",
             },
+            departments: [],
+            users: [],
         };
+    },
+    methods: {
+        search: _.debounce(function() {
+            window.events.$emit("search", this.filters);
+        }, 350),
+        fetch(entity, queryParams = "") {
+            this[entity] = [];
+            window.axios
+                .get(`/${entity}${queryParams}`)
+                .then(({ data }) => {
+                    this[entity] = data;
+                })
+                .catch((errors) => {
+                    window.flash("Algo deu errado.", "danger");
+                });
+        },
+    },
+    created() {
+        this.authUser = user;
+        this.fetch("departments");
+        this.fetch("users");
     },
 };
 </script>

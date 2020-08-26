@@ -119,13 +119,13 @@ export default {
     computed: {
         status() {
             if (this.local_chamado.status === 1)
-                return '<span class="badge badge-warning">Aberto</span>';
+                return '<span class="badge badge-pill badge-warning">Aberto</span>';
             else if (this.local_chamado.status === 2)
-                return '<span class="badge badge-primary">Andamento</span>';
+                return '<span class="badge badge-pill badge-primary">Andamento</span>';
             else if (this.local_chamado.status === 0)
-                return '<span class="badge badge-success">Concluído</span>';
+                return '<span class="badge badge-pill badge-success">Concluído</span>';
             else if (this.local_chamado.status === 3)
-                return '<span class="badge badge-danger">Recusado</span>';
+                return '<span class="badge badge-pill badge-danger">Recusado</span>';
         },
         created() {
             return moment(this.local_chamado.created_at).format("DD/MM/YYYY");

@@ -17,6 +17,14 @@ Vue.component(
     "create-update-support-component",
     require("./components/Supports/CreateUpdate.vue").default
 );
+Vue.component(
+    "index-support-component",
+    require("./components/Supports/Index.vue").default
+);
+Vue.component(
+    "modal-support-component",
+    require("./components/Supports/Modal.vue").default
+);
 
 // Utilities
 Vue.component("flash", require("./components/Utilities/Flash.vue").default);

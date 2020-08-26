@@ -52,4 +52,12 @@ class Department extends Model
             })
             ->get();
     }
+
+    /**
+     *
+     */
+    public function search(array $filters)
+    {
+        return $this->whereNotNull('status')->with('subdepartments')->get();
+    }
 }

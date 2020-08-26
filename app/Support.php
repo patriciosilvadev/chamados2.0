@@ -3,7 +3,6 @@
 namespace App;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Support extends Model
@@ -64,137 +63,54 @@ class Support extends Model
         return $this->hasOne(Jutification::class);
     }
 
-    public static function regularUser($user, $filtro)
+    public function search(array $filters)
     {
-        return Chamado::with(['usuario', 'local', 'servico', 'ambiente', 'setor', 'departamento'])
-            ->whereIn('status', $filtro->status)
-            // ->where('usuario_id', $user->id)
-            ->whereHas('usuario.departamentos', function ($query) use ($filtro) {
-                $query->whereIn('i_grupo.cod_grupo', auth()->user()->departamentos->pluck('cod_grupo')->all());
+        return $this->whereIn('status', json_decode($filters['status']))
+            ->whereBetween(
+                'created_at',
+                [
+                    $filters['start_date'] ? $filters['start_date'] : Carbon::now()->subYear(),
+                    $filters['end_date'] ? $filters['end_date'] : Carbon::now(),
+                ]
+            )
+            ->where(function ($query) use ($filters) {
+                $role = auth()->user()->role();
+                if ($filters['owner'] == 2 && $role == 'manager') {
+                    return $query->whereHas('user.department', function ($query) {
+                        return $query->where('departments.id', auth()->user()->department->id);
+                    });
+                }
+                if ($filters['owner'] == 0 && $role == 'support') {
+                    if (count(auth()->user()->department->subdepartments) > 0) {
+                        return $query->where('area_id', auth()->user()->subdepartment->id);
+                    }
+                    return $query->where('area_id', auth()->user()->department->id);
+                }
+                if ($filters['owner'] == 1) {
+                    return $query->where('user_id', auth()->user()->id);
+                }
             })
-            ->where(function ($query) use ($filtro) {
-                $query->orWhere('id', 'like', "%$filtro->search%")
-                    ->orWhereHas('local', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
+            ->where(function ($query) use ($filters) {
+                $query->where('id', 'like', "%" . $filters['search'] . "%")
+                    ->orWhereHas('environment', function ($query) use ($filters) {
+                        $query->where('name', 'like', "%" . $filters['search'] . "%");
                     })
-                    ->orWhereHas('setor', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
+                    ->orWhereHas('sector', function ($query) use ($filters) {
+                        $query->where('name', 'like', "%" . $filters['search'] . "%");
                     })
-                    ->orWhereHas('servico', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
+                    ->orWhereHas('service', function ($query) use ($filters) {
+                        $query->where('name', 'like', "%" . $filters['search'] . "%");
                     })
-                    ->orWhereHas('ambiente', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
+                    ->orWhereHas('spot', function ($query) use ($filters) {
+                        $query->where('name', 'like', "%" . $filters['search'] . "%");
+                    })
+                    ->orWhereHas('user', function ($query) use ($filters) {
+                        $query->where('name', 'like', "%" . $filters['search'] . "%");
                     });
             })
             ->orderBy('status')
-            // ->orderBy('data_desejada', 'asc')
-            ->latest('updated_at')
-            ->paginate($filtro->paginate);
-    }
-
-    public static function adminUser($user, $filtro)
-    {
-        return Chamado::with(['usuario', 'local', 'servico', 'ambiente', 'setor', 'departamento'])
-            ->whereIn('status', $filtro->status)
-            ->whereIn('departamento_id', $user->departamentos->pluck('cod_grupo')->all())
-            ->whereHas('usuario', function ($query) use ($filtro) {
-                $query->where('nome', 'like', "%$filtro->solicitante%");
-            })
-            ->whereBetween('created_at', $filtro->data)
-            ->where(function ($query) use ($filtro) {
-                $query->orWhere('id', 'like', "%$filtro->search%")
-                    ->orWhereHas('local', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('setor', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('servico', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('ambiente', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('usuario', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    });
-            })
-            ->orderBy('status')
-            // ->orderBy('data_desejada', 'asc')
-            ->latest('updated_at')
-            ->paginate($filtro->paginate);
-    }
-
-    public static function gestorUser($user, $filtro)
-    {
-        return Chamado::with(['usuario', 'local', 'servico', 'ambiente', 'setor', 'departamento'])
-            ->whereIn('status', $filtro->status)
-            ->whereIn('departamento_id', $filtro->departamento)
-            ->whereHas('usuario.departamentos', function ($query) use ($filtro) {
-                $query->whereIn('i_grupo.cod_grupo', auth()->user()->departamentos->pluck('cod_grupo')->all());
-            })
-            ->whereHas('usuario', function ($query) use ($filtro) {
-                $query->where('nome', 'like', "%$filtro->solicitante%");
-            })
-            ->whereBetween('created_at', $filtro->data)
-            ->where(function ($query) use ($filtro) {
-                $query->orWhere('id', 'like', "%$filtro->search%")
-                    ->orWhereHas('local', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('setor', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('servico', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('ambiente', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('usuario', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    });
-            })
-            ->orderBy('status')
-            // ->orderBy('data_desejada', 'asc')
-            ->orderBy('departamento_id')
-            ->latest('updated_at')
-            ->paginate($filtro->paginate);
-    }
-
-    public static function diretorUser($user, $filtro)
-    {
-        return Chamado::with(['usuario', 'local', 'servico', 'ambiente', 'setor', 'departamento'])
-            ->whereIn('status', $filtro->status)
-            ->whereIn('departamento_id', $filtro->departamento)
-            ->whereHas('usuario', function ($query) use ($filtro) {
-                $query->where('nome', 'like', "%$filtro->solicitante%");
-            })
-            ->whereBetween('created_at', $filtro->data)
-            ->where(function ($query) use ($filtro) {
-                $query->orWhere('id', 'like', "%$filtro->search%")
-                    ->orWhereHas('local', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('setor', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('servico', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('ambiente', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    })
-                    ->orWhereHas('usuario', function ($query) use ($filtro) {
-                        $query->where('nome', 'like', "%$filtro->search%");
-                    });
-            })
-            ->orderBy('status')
-            // ->orderBy('data_desejada', 'asc')
-            ->orderBy('departamento_id')
-            ->latest('updated_at')
-            ->paginate($filtro->paginate);
+            ->with(['user', 'environment', 'service', 'spot', 'sector', 'area'])
+            ->paginate($filters['paginate']);
     }
 
     public function notificationTrigger()

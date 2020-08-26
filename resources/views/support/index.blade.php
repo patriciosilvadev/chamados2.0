@@ -10,16 +10,10 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <index-chamado-component
-                    :user="{{ $user }}"
-                    :users="{{ $users }}"
-                    :departments="{{ $departments }}"
-                ></index-chamado-component>
-                <modal-chamado-component
-                    :user='{{ $user }}'
-                ></modal-chamado-component>
+                <index-support-component></index-support-component>
             </div>
         </div>
     </div>
 </div>
+<modal-support-component></modal-support-component>
 @endsection

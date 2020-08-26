@@ -15,8 +15,8 @@ class GoogleDriveUpload implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $anexoNome;
-    protected $directory = 'chamados_file';
+    protected $fileName;
+    protected $directory = 'supports_file';
     public $tries = 3;
     public $timeout = 600;
 
@@ -25,9 +25,9 @@ class GoogleDriveUpload implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($anexoNome)
+    public function __construct($fileName)
     {
-        $this->anexoNome = $anexoNome;
+        $this->fileName = $fileName;
     }
 
     /**
@@ -37,9 +37,9 @@ class GoogleDriveUpload implements ShouldQueue
      */
     public function handle()
     {
-        // $file = public_path("{$this->directory}\\") . $this->anexoNome; // Windows Server
-        $file = public_path("{$this->directory}/") . $this->anexoNome; // Linux Server
-        if (Storage::disk('google')->put($this->anexoNome, fopen($file, 'r+')))
+        $file = public_path("{$this->directory}/") . $this->fileName;
+        if (Storage::disk('google')->put($this->fileName, fopen($file, 'r+'))) {
             File::delete($file);
+        }
     }
 }

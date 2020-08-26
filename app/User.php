@@ -12,6 +12,7 @@ class User extends Authenticatable
     use Notifiable, SoftDeletes;
 
     protected $connection = 'mysql2';
+    protected $table = 'admin.users';
 
     protected $fillable = [
         'department_id', 'subdepartment_id','name','email','avatar','username','status',
@@ -106,6 +107,14 @@ class User extends Authenticatable
         }
 
         return 'regular';
+    }
+
+    /**
+     *
+     */
+    public function search(array $filters)
+    {
+        return $this->whereHas('supports')->get();
     }
 
     // public static function atendentes()
