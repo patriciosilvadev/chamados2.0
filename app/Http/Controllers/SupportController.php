@@ -118,10 +118,8 @@ class SupportController extends Controller
 
     public function show(Support $support)
     {
-        return view('support.show')->with([
-            'support' => $support,
-            'sector' => Sector::where('support_area', $support->area)->get(),
-        ]);
+        $support = Support::whereId($support->id)->with(['user', 'environment', 'service', 'spot', 'sector', 'area'])->first();
+        return view('support.show')->with(['support' => $support]);
     }
 
     protected function attach_file_name()

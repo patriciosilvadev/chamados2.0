@@ -25,6 +25,10 @@ Vue.component(
     "modal-support-component",
     require("./components/Supports/Modal.vue").default
 );
+Vue.component(
+    "details-support-component",
+    require("./components/Supports/Update/Detail.vue").default
+);
 
 // Utilities
 Vue.component("flash", require("./components/Utilities/Flash.vue").default);

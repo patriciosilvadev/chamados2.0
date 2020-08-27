@@ -5,7 +5,7 @@
 @section('content')
 <div class="card">
     <div class="card-header card-header-primary">
-        <h4 class="card-title ">Chamado #{{ $chamado->id }}</h4>
+        <h4 class="card-title ">Chamado #{{ $support->id }}</h4>
     </div>
     <div class="card-body">
         <div class="row">
@@ -13,47 +13,46 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-9">
-                            <details-chamado-component
-                                :chamado="{{ $chamado }}"
+                            <details-support-component
+                                :support_data="{{ $support }}"
+                            ></details-support-component>
+                            {{-- <description-support-component
+                                :support="{{ $support }}"
                                 :user="{{ $user }}"
-                            ></details-chamado-component>
-                            <description-chamado-component
-                                :chamado="{{ $chamado }}"
-                                :user="{{ $user }}"
-                            ></description-chamado-component>
-                            <div class="row mb-3">
+                            ></description-support-component> --}}
+                            {{-- <div class="row mb-3">
                                 <div class="col-md-12">
-                                    <edit-setor-servico-chamado-component
-                                        :chamado="{{ $chamado }}"
+                                    <edit-setor-servico-support-component
+                                        :support="{{ $support }}"
                                         :user="{{ $user }}"
                                         :setores="{{ $setores }}"
-                                    ></edit-setor-servico-chamado-component>
+                                    ></edit-setor-servico-support-component>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <mao-obra-chamado-component
-                                        :chamado="{{ $chamado }}"
+                                    <mao-obra-support-component
+                                        :support="{{ $support }}"
                                         :user="{{ $user }}"
-                                    ></mao-obra-chamado-component>
+                                    ></mao-obra-support-component>
                                 </div>
                                 <div class="col-md-6">
-                                    <status-chamado-component
-                                        :chamado="{{ $chamado }}"
+                                    <status-support-component
+                                        :support="{{ $support }}"
                                         :user="{{ $user }}"
                                         :atendentes="{{ $atendentes }}"
-                                    ></status-chamado-component>
+                                    ></status-support-component>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
-                        <div class="col-md-3">
+                        {{-- <div class="col-md-3">
                             <div class="row">
                                 <create-interacao-component
-                                    :chamado="{{ $chamado }}"
+                                    :support="{{ $support }}"
                                     :user="{{ $user }}"
                                 ></create-interacao-component>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>

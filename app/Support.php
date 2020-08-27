@@ -63,9 +63,16 @@ class Support extends Model
         return $this->hasOne(Jutification::class);
     }
 
+    public function notificationTrigger()
+    {
+        return $this->messages()
+            ->whereBetween('created_at', [Carbon::now()->subMinutes(30), Carbon::now()])
+            ->count();
+    }
+
     public function search(array $filters)
     {
-        return $this->whereIn('status', json_decode($filters['status']))
+        return $this->whereIn('status', $filters['status'] ? json_decode($filters['status']) : [1, 2])
             ->whereBetween(
                 'created_at',
                 [
@@ -111,12 +118,5 @@ class Support extends Model
             ->orderBy('status')
             ->with(['user', 'environment', 'service', 'spot', 'sector', 'area'])
             ->paginate($filters['paginate']);
-    }
-
-    public function notificationTrigger()
-    {
-        return $this->messages()
-            ->whereBetween('created_at', [Carbon::now()->subMinutes(30), Carbon::now()])
-            ->count();
     }
 }
