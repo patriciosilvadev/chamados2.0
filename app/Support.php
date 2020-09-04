@@ -88,7 +88,7 @@ class Support extends Model
                     });
                 }
                 if ($filters['owner'] == 0 && $role == 'support') {
-                    if (count(auth()->user()->department->subdepartments) > 0) {
+                    if (count(auth()->user()->department->subdepartments)) {
                         return $query->where('area_id', auth()->user()->subdepartment->id);
                     }
                     return $query->where('area_id', auth()->user()->department->id);

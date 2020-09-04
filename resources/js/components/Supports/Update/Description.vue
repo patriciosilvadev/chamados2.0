@@ -1,8 +1,11 @@
 <template>
-    <div
+    <form
         class="status mb-3"
-        v-if="local_chamado.user_id == user.id && local_chamado.status == 1"
+        v-if="support.user_id == authUser.id && support.status == 1"
         v-show="show"
+        enctype="multipart/form-data"
+        @submit.prevent="send"
+        @keydown="form.errors.clear($event.target.name)"
     >
         <div class="row mb-2">
             <div class="col-md-12">
@@ -11,79 +14,62 @@
         </div>
         <div class="col-lg-12">
             <div class="form-group">
-                <label for="descricao">Descrição</label>
+                <label for="description">Descrição</label>
                 <textarea
-                    name="descricao"
-                    id="descricao"
+                    name="description"
+                    id="description"
                     cols="30"
                     rows="3"
                     class="form-control"
-                    v-model="form.descricao"
+                    v-model="form.description"
                 ></textarea>
                 <small
                     class="text-danger"
-                    v-if="errors.hasOwnProperty('descricao')"
-                    v-text="errors.descricao[0]"
+                    v-text="form.errors.get('description')"
+                    v-if="form.errors.has('description')"
                 ></small>
             </div>
         </div>
-        <div
-            class="col-md-12 d-flex justify-content-end"
-            v-if="local_chamado.status != form.status"
-        >
-            <button
-                class="btn btn-primary"
-                :class="{ disabled: loading }"
-                @click.prevent="send()"
-            >
-                <div
-                    class="spinner-border spinner-border-sm"
-                    role="status"
-                    v-if="loading"
-                >
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <span>Enviar</span>
-            </button>
-        </div>
-    </div>
+        <submit-button />
+    </form>
 </template>
 <script>
+import Form from "../../../form-validation/Form";
+
 export default {
-    props: ["chamado", "user"],
+    props: ["support_data", "user"],
     data() {
         return {
-            local_chamado: this.chamado,
-            form: {
-                descricao: this.chamado.descricao,
-            },
-            errors: {},
-            loading: false,
+            support: this.support_data,
+            authUser: {},
+            form: new Form({
+                description: this.support_data.description,
+            }),
             show: false,
         };
     },
     methods: {
         send: _.throttle(
             function() {
-                this.loading = !this.loading;
-                axios
-                    .patch(`/chamados/${this.chamado.id}/edit`, this.form)
+                window.events.$emit("loading", true);
+                this.form
+                    .patch(`/supports/${this.support.id}`)
                     .then(({ data }) => {
-                        this.loading = !this.loading;
-                        this.local_chamado.descricao = this.form.descricao;
+                        window.events.$emit("loading", false);
+                        this.support.description = this.form.description;
                         this.show = false;
                         window.events.$emit(
-                            "send_descricao",
-                            this.local_chamado
+                            "send_description",
+                            this.form.description
                         );
                         window.events.$emit("editado", this.show);
                     })
                     .catch((error) => {
-                        this.loading = !this.loading;
-                        this.form.descricao =
-                            this.form.descricao == ""
-                                ? this.chamado.descricao
-                                : this.from.descricao;
+                        window.events.$emit("loading", false);
+                        this.form.description =
+                            this.form.description == ""
+                                ? this.support_data.description
+                                : this.from.description;
                         this.errors = error.response.data.errors;
                     });
             },
@@ -92,8 +78,9 @@ export default {
         ),
     },
     created() {
-        window.events.$on("send_status", (chamado) => {
-            this.local_chamado.status = chamado.status;
+        this.authUser = user;
+        window.events.$on("send_status", (support) => {
+            this.support.status = support.status;
         });
         window.events.$on("editar", (value) => {
             this.show = value;

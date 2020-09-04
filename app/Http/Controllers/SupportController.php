@@ -209,25 +209,26 @@ class SupportController extends Controller
             }
         }
 
-        $support = Support::whereId($support->id)->with(['sector', 'service'])->first();
-
         try {
-            Mail::to($support->usuario->email)->send(new SupportUpdated($support));
+            Mail::to($support->user->email)->send(new SupportUpdated($support));
         } catch (Exception $e) {
             Log::error($e);
         }
 
-        $this->recordActivity($support, "[
-            'status' => {$support->status},
-            'description' => {$support->description},
-            'execution_by' => {$support->execution_by},
-            'sector' => {$support->sector->nome},
-            'service' => {$support->service->nome},
-            'expected_hours' => {$support->expected_hours},
-            'done_by' => " . json_encode($support->done_by) .
-        "]");
+        $support->activities()->create([
+            'description' => [
+                'status' => $support->status,
+                'description' => $support->description,
+                'execution_by' => $support->execution_by,
+                'sector' => $support->sector->name,
+                'service' => $support->service->name,
+                'expected_hours' => $support->expected_hours,
+                'done_by' => $support->done_by,
+                'created_by' => $support->user->name,
+            ],
+        ]);
 
-        return $support;
+        return $support->fresh();
     }
 
     public function getAttach_file_name($attach_file_name)

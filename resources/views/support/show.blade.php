@@ -16,10 +16,9 @@
                             <details-support-component
                                 :support_data="{{ $support }}"
                             ></details-support-component>
-                            {{-- <description-support-component
-                                :support="{{ $support }}"
-                                :user="{{ $user }}"
-                            ></description-support-component> --}}
+                            <description-support-component
+                                :support_data="{{ $support }}"
+                            ></description-support-component>
                             {{-- <div class="row mb-3">
                                 <div class="col-md-12">
                                     <edit-setor-servico-support-component

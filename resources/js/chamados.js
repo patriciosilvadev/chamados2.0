@@ -29,6 +29,10 @@ Vue.component(
     "details-support-component",
     require("./components/Supports/Update/Detail.vue").default
 );
+Vue.component(
+    "description-support-component",
+    require("./components/Supports/Update/Description.vue").default
+);
 
 // Utilities
 Vue.component("flash", require("./components/Utilities/Flash.vue").default);

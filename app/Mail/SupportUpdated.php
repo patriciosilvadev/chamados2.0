@@ -2,25 +2,26 @@
 
 namespace App\Mail;
 
+use App\Support;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ChamadoAtualizado extends Mailable implements ShouldQueue
+class SupportUpdated extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    protected $chamado;
+    protected $support;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($chamado)
+    public function __construct(Support $support)
     {
-        $this->chamado = $chamado;
+        $this->support = $support;
     }
 
     /**
@@ -30,7 +31,7 @@ class ChamadoAtualizado extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->markdown('emails.chamados.atualizado')
-            ->with(['chamado' => $this->chamado]);
+        return $this->markdown('emails.supports.updated')
+            ->with(['support' => $this->support]);
     }
 }

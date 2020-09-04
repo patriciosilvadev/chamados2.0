@@ -4,87 +4,87 @@
             class="row d-flex flex-wrap justify-content-center align-items-center"
         >
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Solicitante: ${support.user.name}`"
             ></span>
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-html="`Status: ${status}`"
             ></span>
 
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-if="support.status == 3"
                 v-html="`Justificativa: ${support.justificativa.justificativa}`"
             ></span>
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Data criação: ${created}`"
             ></span>
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Última Atualização: ${updated}`"
             ></span>
             <span
                 v-if="support.environment"
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Local: ${support.environment.name}`"
             ></span>
             <span
                 v-if="support.spot"
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Ambiente: ${support.spot.name}`"
             ></span>
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Setor: ${support.sector.name}`"
             ></span>
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Serviço: ${support.service.name}`"
             ></span>
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Departamento: ${support.area.name}`"
             ></span>
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Mão de Obra: ${execution_by}`"
             ></span>
             <span
                 v-if="support.expected_hours"
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Horas previstas: ${support.expected_hours} hora(s)`"
             ></span>
             <span
                 v-if="support.real_hours"
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Horas real: ${support.real_hours} hora(s)`"
             ></span>
             <span
                 v-if="desired_date"
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Data desejada: ${desired_date}`"
             ></span>
             <span
                 v-if="expected_date"
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Data prevista: ${expected_date}`"
             ></span>
             <span
                 v-if="real_date"
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Data real: ${real_date}`"
             ></span>
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Atendida por: ${atendente.name}; `"
                 v-for="(atendente, index) in support.done_by"
                 :key="index"
                 >`</span
             >
             <span
-                class="text-capitalize mx-3"
+                class="text-capitalize mx-3 my-1"
                 v-text="`Descrição: ${support.description}`"
             ></span>
         </div>
@@ -113,7 +113,7 @@ export default {
     props: ["support_data"],
     data() {
         return {
-            support: {},
+            support: this.support_data,
             authUser: {},
             show: false,
         };
@@ -161,7 +161,6 @@ export default {
         },
     },
     created() {
-        this.support = this.support_data;
         this.authUser = user;
 
         window.events.$on("send_status", (support) => {
@@ -172,8 +171,8 @@ export default {
             this.support.execution_by = support.execution_by;
         });
 
-        window.events.$on("send_description", (support) => {
-            this.support.description = support.description;
+        window.events.$on("send_description", (description) => {
+            this.support.description = description;
         });
 
         window.events.$on("setor_servico", (support) => {
